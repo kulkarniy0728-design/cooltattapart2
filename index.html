@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pia Pia Game</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #ffd6e7;
+    font-family: Arial, sans-serif;
+}
+
+#game {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+#pia {
+    position: absolute;
+    width: 200px;
+    left: 100px;
+    top: 300px;
+}
+
+.arrow {
+    position: absolute;
+    width: 150px;
+    right: -100px;
+}
+
+#health {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 35px;
+}
+
+#timer {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 35px;
+}
+
+#screen {
+    display:none;
+    position:absolute;
+    inset:0;
+    background:#ffb6d5;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:40px;
+    font-size:25px;
+}
+
+#letter {
+    background:white;
+    border-radius:20px;
+    padding:30px;
+    max-width:700px;
+}
+</style>
+
+</head>
+
+<body>
+<audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<div id="game">
+
+<img id="pia" src="pia.webp">
+
+<div id="health">❤️❤️❤️</div>
+<div id="timer">2:00</div>
+
+</div>
+
+
+<div id="screen">
+    <div id="letter"></div>
+</div>
+
+
+<script>
+
+let pia = document.getElementById("pia");
+let healthDisplay = document.getElementById("health");
+let timerDisplay = document.getElementById("timer");
+
+let y = 300;
+let health = 3;
+let time = 120;
+let gameOver = false;
+let music = document.getElementById("bgMusic");
+document.addEventListener("keydown", () => {
+    music.play();
+}, {once:true});
+
+
+// Move Pia Pia
+
+document.addEventListener("keydown", e => {
+
+    if(gameOver) return;
+
+    if(e.key === "ArrowUp"){
+        y -= 40;
+    }
+
+    if(e.key === "ArrowDown"){
+        y += 40;
+    }
+
+    if(y < 0) y = 0;
+    if(y > window.innerHeight-120)
+        y = window.innerHeight-120;
+
+    pia.style.top = y + "px";
+
+});
+
+
+// Create arrows
+
+function createArrow(){
+
+    if(gameOver) return;
+
+    let arrow = document.createElement("img");
+    arrow.src = "arrow.png";
+    arrow.className = "arrow";
+
+    let ay = Math.random() * (window.innerHeight-80);
+    arrow.style.top = ay + "px";
+
+    document.getElementById("game").appendChild(arrow);
+
+
+    let x = window.innerWidth;
+
+    let move = setInterval(()=>{
+
+        x -= 15;
+        arrow.style.left = x + "px";
+
+
+        // collision
+
+        let piaBox = pia.getBoundingClientRect();
+        let arrowBox = arrow.getBoundingClientRect();
+
+
+        if(
+            arrowBox.left < piaBox.right &&
+            arrowBox.right > piaBox.left &&
+            arrowBox.top < piaBox.bottom &&
+            arrowBox.bottom > piaBox.top
+        ){
+
+            health--;
+            arrow.remove();
+            clearInterval(move);
+
+            updateHealth();
+
+            if(health <=0){
+                endGame(false);
+            }
+        }
+
+
+        if(x < -100){
+            arrow.remove();
+            clearInterval(move);
+        }
+
+
+    },20);
+
+}
+
+
+setInterval(createArrow,200);
+
+
+
+// Health
+
+function updateHealth(){
+
+    healthDisplay.innerHTML = "❤️".repeat(health);
+
+}
+
+
+
+// Timer
+
+let timer = setInterval(()=>{
+
+    if(gameOver) return;
+
+    time--;
+
+    let min = Math.floor(time/60);
+    let sec = time%60;
+
+    timerDisplay.innerHTML =
+    min + ":" + (sec<10?"0":"") + sec;
+
+
+    if(time<=0){
+        endGame(true);
+    }
+
+},1000);
+
+
+
+
+// Win/Lose
+
+function endGame(win){
+
+    gameOver=true;
+
+    document.getElementById("game").style.display="none";
+
+    let message = `
+
+    hi baby baby this is a little rushed n i know that im in time out but i rlly rlly want u to know that i love you so much, and u mean the whole wide world to me.
+
+    I wanna make everyday a special day for u, even boring ahh mondays, and i wanna spend every second i breathe with u.
+
+    I dont want other guys to breathe around u cuz thas rlly gay, and i want u all to my self.
+
+    thanks for loving pia pia and loving me as well.
+
+    (dont stop liking me ur mine fvorever)
+
+    `;
+
+
+    document.getElementById("letter").innerHTML =
+    (win ? "🎉 YOU SAVED PIA PIA 🎉" : "💔 PIA PIA GOT HIT 💔")
+    +
+    "<br><br>"
+    +
+    message;
+
+
+    document.getElementById("screen").style.display="flex";
+
+}
+
+
+</script>
+
+</body>
+</html>
