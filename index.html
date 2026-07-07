@@ -20,7 +20,7 @@ body {
 
 #pia {
     position: absolute;
-    width: 120px;
+    width: 50px;
     left: 100px;
     top: 300px;
 }
@@ -146,7 +146,7 @@ function createArrow(){
 
     let move = setInterval(()=>{
 
-        x -= 5;
+        x -= 1;
         arrow.style.left = x + "px";
 
 
@@ -186,7 +186,7 @@ function createArrow(){
 }
 
 
-setInterval(createArrow,1000);
+setInterval(createArrow,2000);
 
 
 
